@@ -1,0 +1,149 @@
+---
+title: "Prediction Template"
+output: html_notebook
+---
+
+Hopefully this can serve as a guide to using the package with this selection of data.
+
+First to install the package.
+```{r}
+library(readr)
+library(stringr)
+library(devtools)
+if (!require(robencla)) {
+  devtools::install_github("https://github.com/Gibbsdavidl/robencla",quiet = TRUE)
+}
+```
+
+
+Then we need to read in the training data.
+
+```{r}
+
+## EDIT THIS ##
+#data_dir <- 'F:/Work/cluster_prediction_data/'
+data_dir <- 'C:/Users/dgibbs/ISB_Work/cluster_prediction_data/'
+
+# The immune subtypes### Use: ClusterModel1 as the subtype
+subtypes <- readr::read_delim(paste0(data_dir,'data/five_signature_mclust_ensemble_results.tsv.gz'), delim = '\t')
+subtypes$AliquotBarcode <- str_replace_all(string = subtypes$AliquotBarcode, pattern = '\\.', replacement = '-')
+subtypes$SampleBarcode2 <- str_sub(subtypes$SampleBarcode, start = 1, end = 15)
+subtypes$SampleBarcode2 <- str_sub(subtypes$SampleBarcode, start = 1, end = 15)
+
+# The Pan-Cancer EB++ (named EBpp) batch corrected data set
+ebpp <- read_delim(paste0(data_dir,'data/EBpp/EBPlusPlusAdjustPANCAN_IlluminaHiSeq_RNASeqV2.geneExp.tsv'), delim = '\t')
+ebpp$gene_id <- NULL
+ebpp <- as.data.frame(ebpp)
+
+# read in the table of gene symbols per row
+ebpp_genes <- readr::read_csv(paste0(data_dir,'data/EBpp/ebpp_genes.txt'))
+gene_symbols <- unlist(sapply(
+  sapply(ebpp_genes, function(x) str_split(x,pattern='\\|')),
+    function(y) y[[1]]
+    ))
+
+gene_dup <- which(!duplicated(gene_symbols))
+ebpp <- ebpp[gene_dup,]
+rownames(ebpp) <- gene_symbols[gene_dup]
+
+# first we'll select some genes:
+# might need to remove '?s'
+random_genes <- sample(gene_symbols,size=100)
+all_genes <- random_genes
+
+# then create some gene signatures:
+random_sigs <- list()
+for (i in 1:5){
+  random_sigs[[i]] <- sample(gene_symbols,size=25)
+  all_genes <- c(all_genes, random_sigs[[i]])
+}
+
+# subset data
+# and get it into order
+ebpp_sub <- ebpp[all_genes,subtypes$AliquotBarcode]
+
+# we transpose it and add in the label
+ebpp_sub_t <- as.data.frame(t(as.data.frame(ebpp_sub)))
+ebpp_sub_t[is.na(ebpp_sub_t)] <- 0.0
+
+# add in the labels and barcodes
+ebpp_sub_t[['Label']] <- subtypes$ClusterModel1
+ebpp_sub_t[['Barcode']] <- subtypes$AliquotBarcode
+
+# and write it out for training
+write.csv(ebpp_sub_t, paste0(data_dir,'EBPP_subset.csv'), row.names = FALSE, quote = F)
+
+# Can't have zeros or NAs!!!
+```
+
+```{r}
+# then create some gene signatures:
+random_sigs <- list(
+    sig1=c("JMJD6","GJA4","CTSK","SIGLECP3", "NUDT21", "LRFN2", "FCGR2B","OAS1","GUCA1B","C20orf201","HOXA11AS","ZNF528"),
+    sig2=c("PIP5KL1","ACAD8","CD69","FBXW7","IKBKE","IRF4","MTUS1","DEFB103B","RPSA","SNORD12","C9orf98", "NCAPG2"),
+    sig3=c("VAMP7","NTN3","ZNF419","PLAGL2","C5orf44","IGLL3","GSK3B","UGT1A1","GPC2","VMAC","FAM106A","KLF7.1")
+)
+```
+
+Now we're ready to do some training
+```{r}
+library(robencla)
+
+# our classifier object named Anne.
+sept <- Robencla$new("September")
+
+# xgboost parameters to pass to each sub-classifier in the ensembles
+params <- list(max_depth=12,
+               eta=0.2,
+               nrounds=24,
+               nthreads=4,
+               gamma=1,
+               lambda=1.25,
+               alpha=0.25,
+               verbose=0)
+
+# split the data, train and test
+sept$autotrain(data_file=paste0(data_dir,'EBPP_subset.csv'),
+               label_name='Label',
+               sample_id = 'Barcode',
+               data_mode=c('sigpairs','pairs','quartiles'), # pairs,sigpairs,quartiles,tertiles,binarize,ranks,original #
+               signatures=random_sigs,
+               size=11,
+               params=params,
+               train_perc=0.5,
+               combine_function='median')
+
+
+```
+
+
+```{r}
+
+sept$autotest(data_file='F_dat_w_cluster_rnaseq.csv',
+              label_name='Cluster',
+              sample_id = 'Barcode')
+```
+
+
+```{r}
+# print the test data results table
+df <- anne$results(include_label = T)
+table(Label=df$Label, Pred=df$BestCalls)
+```
+```{r}
+# metrics on the test set predictions
+anne$classification_metrics(use_cv_results = F) # uses CV results
+```
+```{r}
+# and get the importance of features in each ensemble member
+anne$importance() # uses the last fold trained.
+```
+
+```{r}
+# plot the ROC curves for each class
+## IF THE ROC IS UPSIDE DOWN, SET FLIP=T
+ensemble_rocs(anne, flip=F) # uses the last fold trained.
+
+```
+
+The end.
