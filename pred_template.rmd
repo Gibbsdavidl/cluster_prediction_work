@@ -15,66 +15,22 @@ if (!require(robencla)) {
 }
 ```
 
-
-Then we need to read in the training data.
-
 ```{r}
+## EDIT THESE LOCATIONS##
 
-## EDIT THIS ##
-#data_dir <- 'F:/Work/cluster_prediction_data/'
-data_dir <- 'C:/Users/dgibbs/ISB_Work/cluster_prediction_data/'
+### WHERE THE DATA DIR LIVES ###
+data_dir <- 'F:/Work/cluster_prediction_data/'
+#data_dir <- 'C:/Users/dgibbs/ISB_Work/cluster_prediction_data/'
 
-# The immune subtypes### Use: ClusterModel1 as the subtype
-subtypes <- readr::read_delim(paste0(data_dir,'data/five_signature_mclust_ensemble_results.tsv.gz'), delim = '\t')
-subtypes$AliquotBarcode <- str_replace_all(string = subtypes$AliquotBarcode, pattern = '\\.', replacement = '-')
-subtypes$SampleBarcode2 <- str_sub(subtypes$SampleBarcode, start = 1, end = 15)
-subtypes$SampleBarcode2 <- str_sub(subtypes$SampleBarcode, start = 1, end = 15)
+### WHERE TO WRITE THE NEW TABLES ###
+out_dir <- paste0(data_dir, 'results/')
 
-# The Pan-Cancer EB++ (named EBpp) batch corrected data set
-ebpp <- read_delim(paste0(data_dir,'data/EBpp/EBPlusPlusAdjustPANCAN_IlluminaHiSeq_RNASeqV2.geneExp.tsv'), delim = '\t')
-ebpp$gene_id <- NULL
-ebpp <- as.data.frame(ebpp)
-
-# read in the table of gene symbols per row
-ebpp_genes <- readr::read_csv(paste0(data_dir,'data/EBpp/ebpp_genes.txt'))
-gene_symbols <- unlist(sapply(
-  sapply(ebpp_genes, function(x) str_split(x,pattern='\\|')),
-    function(y) y[[1]]
-    ))
-
-gene_dup <- which(!duplicated(gene_symbols))
-ebpp <- ebpp[gene_dup,]
-rownames(ebpp) <- gene_symbols[gene_dup]
-
-# first we'll select some genes:
-# might need to remove '?s'
-random_genes <- sample(gene_symbols,size=100)
-all_genes <- random_genes
-
-# then create some gene signatures:
-random_sigs <- list()
-for (i in 1:5){
-  random_sigs[[i]] <- sample(gene_symbols,size=25)
-  all_genes <- c(all_genes, random_sigs[[i]])
-}
-
-# subset data
-# and get it into order
-ebpp_sub <- ebpp[all_genes,subtypes$AliquotBarcode]
-
-# we transpose it and add in the label
-ebpp_sub_t <- as.data.frame(t(as.data.frame(ebpp_sub)))
-ebpp_sub_t[is.na(ebpp_sub_t)] <- 0.0
-
-# add in the labels and barcodes
-ebpp_sub_t[['Label']] <- subtypes$ClusterModel1
-ebpp_sub_t[['Barcode']] <- subtypes$AliquotBarcode
-
-# and write it out for training
-write.csv(ebpp_sub_t, paste0(data_dir,'EBPP_subset.csv'), row.names = FALSE, quote = F)
-
-# Can't have zeros or NAs!!!
+### GENES TO INCLUDE AS A FILE ###
+gene_table <- read.csv(paste0(data_dir,'formatted/random_genes_table.csv'), header=T, stringsAsFactors = F)
+all_genes <- unique(gene_table$Gene)
 ```
+
+
 
 ```{r}
 # then create some gene signatures:
@@ -103,12 +59,12 @@ params <- list(max_depth=12,
                verbose=0)
 
 # split the data, train and test
-sept$autotrain(data_file=paste0(data_dir,'EBPP_subset.csv'),
+sept$autotrain(data_file=paste0(data_dir,'formatted/EBPP_subset.csv'),
                label_name='Label',
                sample_id = 'Barcode',
                data_mode=c('sigpairs','pairs','quartiles'), # pairs,sigpairs,quartiles,tertiles,binarize,ranks,original #
                signatures=random_sigs,
-               size=11,
+               size=3,
                params=params,
                train_perc=0.5,
                combine_function='median')
@@ -119,7 +75,7 @@ sept$autotrain(data_file=paste0(data_dir,'EBPP_subset.csv'),
 
 ```{r}
 
-sept$autotest(data_file='F_dat_w_cluster_rnaseq.csv',
+sept$autotest(paste0(data_dir,'EBPP_subset.csv'),
               label_name='Cluster',
               sample_id = 'Barcode')
 ```
