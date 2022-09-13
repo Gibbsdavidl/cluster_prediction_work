@@ -5,7 +5,8 @@ library(stringr)
 ## EDIT THESE LOCATIONS##
 
 ### WHERE THE DATA DIR LIVES ###
-data_dir <- 'F:/Work/cluster_prediction_data/'
+data_dir <- 'D:/Work/cluster_prediction_data/'
+#data_dir <- 'F:/Work/cluster_prediction_data/'
 #data_dir <- 'C:/Users/dgibbs/ISB_Work/cluster_prediction_data/'
 
 ### WHERE TO WRITE THE NEW TABLES ###
@@ -16,7 +17,7 @@ gene_table <- read.csv(paste0(data_dir,'formatted/random_genes_table.csv'), head
 all_genes <- unique(gene_table$Gene)
 
 ### smaller size for testing ###
-subset_subtypes <- 200
+subset_subtypes <- 500
 
 ## END EDITING
 

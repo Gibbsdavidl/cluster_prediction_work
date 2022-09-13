@@ -4,7 +4,7 @@ library(readr)
 library(stringr)
 
 ### WHERE THE DATA DIR LIVES ###
-data_dir <- 'F:/Work/cluster_prediction_data/'
+data_dir <- 'D:/Work/cluster_prediction_data/'
 #data_dir <- 'C:/Users/dgibbs/ISB_Work/cluster_prediction_data/'
 
 ### WHERE TO WRITE THE NEW TABLES ###
