@@ -26,7 +26,7 @@ data_dir <- 'D:/Work/cluster_prediction_data/'
 out_dir <- paste0(data_dir, 'results/')
 
 ### WHAT TO NAME THE FILES
-file_prefix <- "Random_Genes_Sept13_run2"
+file_prefix <- "Random_Genes_Sept13_run3"
 
 ### GENES TO INCLUDE AS A FILE ###
 gene_table <- read.csv(paste0(data_dir,'formatted/random_genes_table.csv'), header=T, stringsAsFactors = F)
@@ -83,12 +83,10 @@ susan$autotest(paste0(data_dir,'formatted/Rsubread_subset.csv'),
               sample_id = 'Barcode')
 
 pred_results <- susan$results(include_label = T)
-
 pred_results$RunName <- file_prefix
+pred_results <- apply(pred_results,2,as.character)
 
-pred_results <- as.data.table(pred_results)
-
-write_csv(pred_results, file=paste0(out_dir,file_prefix,'_pred_results.csv'))
+write.csv(pred_results, file=paste0(out_dir,file_prefix,'_pred_results.csv'), row.names = F, quote=F)
 ```
 ```{r}
 # metrics on the test set predictions
