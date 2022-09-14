@@ -11,22 +11,17 @@ data_dir <- 'D:/Work/cluster_prediction_data/'
 out_dir <- paste0(data_dir, 'formatted/')
 
 # read in the table of gene symbols per row
-ebpp_genes <- readr::read_csv(paste0(data_dir,'data/EBpp/ebpp_genes.txt'))
-gene_symbols <- unlist(sapply(
-  sapply(ebpp_genes, function(x) str_split(x,pattern='\\|')),
-  function(y) y[[1]]
-))
+available_genes <- readr::read_csv(paste0(data_dir,'data/available_genes.csv'))
 
 # first we'll select some genes:
 # might need to remove '?s'
-random_genes <- sample(gene_symbols,size=100)
-all_genes <- random_genes
+random_genes <- sample(available_genes$Genes,size=100)
 
 # then create some gene signatures:
 random_sigs <- list()
 for (i in 1:5){
-  random_sigs[[i]] <- sample(gene_symbols,size=25)
-  all_genes <- c(all_genes, random_sigs[[i]])
+  random_sigs[[i]] <- sample(available_genes$Genes,size=25)
+  random_genes <- c(random_genes, random_sigs[[i]])
 }
 
 gene_table1 <- data.frame(Type='Feature', Gene=random_genes)
