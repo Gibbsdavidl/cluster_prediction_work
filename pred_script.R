@@ -65,9 +65,11 @@ run_pred <- function(train_data, test_data, data_dir, out_dir, file_prefix, sigs
 
     ### Write out an info table
     info_df <- data.frame(Info=c('Run_Date', 'Training_Data', 'Test_Data', 'Data_Dir', 'Output_Dir', 'Prefix'),
-                          Value=c(Sys.time(), train_data, test_data, data_dir, out_dir, prefix))
+                          Value=c(as.character(Sys.time()), train_data, test_data, data_dir, out_dir, file_prefix))
 
-    return()
+    write_csv(info_df,file=paste0(out_dir,file_prefix,'_info.csv'))
+
+  return()
 }
 
 
@@ -86,7 +88,7 @@ data_dir <- 'D:/Work/cluster_prediction_data/formatted/'
 out_dir <- 'D:/Work/cluster_prediction_data/results4/'
 
 ### WHAT TO NAME THE FILES, WILL BE A COLUMN
-prefix <- "Random_Genes_Sept13_run5"
+file_prefix <- "Random_Genes_Sept13_run5"
 
 ### GENES TO INCLUDE AS A FILE ###
 gene_table <- read.csv(paste0(data_dir,'random_genes_table.csv'), header=T, stringsAsFactors = F)
@@ -99,4 +101,4 @@ sig2=gene_table$Gene[gene_table$Type == 'Set2'],
 sig3=gene_table$Gene[gene_table$Type == 'Set3']
 )
 
-run_pred(train_data, test_data, data_dir, out_dir, prefix, random_sigs)
+run_pred(train_data, test_data, data_dir, out_dir, file_prefix, random_sigs)
