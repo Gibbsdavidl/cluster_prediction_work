@@ -5,7 +5,7 @@ library(devtools)
 require(robencla)
 
 
-run_pred <- function(train_data, test_data, data_dir, out_dir, prefix, sigs) {
+run_pred <- function(train_data, test_data, data_dir, out_dir, file_prefix, sigs) {
 
     ### MAKE SURE OUTPUT PATH IS OK TO WRITE ###
     if (!dir.exists(out_dir)){
