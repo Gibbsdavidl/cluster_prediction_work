@@ -80,7 +80,7 @@ write.csv(ebpp_sub_t, paste0(data_dir,'EBPP_subset.csv'), row.names = FALSE, quo
 # then create some gene signatures:
 random_sigs <- list(
     sig1=c("JMJD6","GJA4","CTSK","SIGLECP3", "NUDT21", "LRFN2", "FCGR2B","OAS1","GUCA1B","C20orf201","HOXA11AS","ZNF528"),
-    sig2=c("PIP5KL1","ACAD8","CD69","FBXW7","IKBKE","IRF4","MTUS1","DEFB103B","RPSA","SNORD12","C9orf98", "NCAPG2"),
+    sig2=c("PIP5KL1","ACAD8","CD69","FBXW7","IKBKE","IRF4","MTUS1","DEFB103B","RPSA","C9orf98", "NCAPG2"),
     sig3=c("VAMP7","NTN3","ZNF419","PLAGL2","C5orf44","IGLL3","GSK3B","UGT1A1","GPC2","VMAC","FAM106A","KLF7.1")
 )
 ```
@@ -112,7 +112,6 @@ sept$autotrain(data_file=paste0(data_dir,'EBPP_subset.csv'),
                params=params,
                train_perc=0.5,
                combine_function='median')
-
 
 ```
 
