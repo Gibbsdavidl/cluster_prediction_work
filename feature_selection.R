@@ -5,7 +5,8 @@ library(stringr)
 ### Selecting features ###
 
 ### WHERE THE DATA DIR LIVES ###
-data_dir <- 'C:/Users/dgibbs/ISB_Work/cluster_prediction_data/'
+#data_dir <- 'C:/Users/dgibbs/ISB_Work/cluster_prediction_data/'
+data_dir <- 'F:/Work/cluster_prediction_data/'
 
 ### WHERE TO WRITE THE NEW TABLES ###
 out_dir <- paste0(data_dir, 'results/')
@@ -104,12 +105,29 @@ write.csv(stat_table, file=paste0(data_dir, 'stat_table.csv'))
 
 
 stat_table <- read.csv(paste0(data_dir,'stat_table.csv'), header=T)
-
 meds_table <- read.csv(paste0(data_dir,'meddiff_table.csv'))
+
+# read in the table of gene symbols per row
+ebpp_genes <- readr::read_csv(paste0(data_dir,'data/EBpp/ebpp_genes.txt'))
+gene_symbols <- unlist(sapply(
+  sapply(ebpp_genes, function(x) str_split(x,pattern='\\|')),
+  function(y) y[[1]]
+))
+
+gene_dup <- which(!duplicated(gene_symbols))
+symbs <- gene_symbols[gene_dup]
+symbs <- symbs[2:20502]
+
+rownames(meds_table) <- symbs
+rownames(stat_table) <- symbs
 
 c1_col <- ifelse( (abs(stat_table$C1stat) > 500) & (abs(meds_table$C1diff) > 2000), "red", "blue")
 plot(y=stat_table$C1stat, x=meds_table$C1diff, col=c1_col)
 
 c2_col <- ifelse( (abs(stat_table$C2stat) > 500) & (abs(meds_table$C2diff) > 2000), "red", "blue")
 plot(y=stat_table$C2stat, x=meds_table$C2diff, col=c2_col)
+
+idx <- (abs(stat_table$C1stat) > 500) & (abs(meds_table$C1diff) > 5000)
+meds_table[idx,]
+
 
