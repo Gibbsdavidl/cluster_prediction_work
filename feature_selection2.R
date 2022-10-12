@@ -6,8 +6,8 @@ library(ggplot2)
 ### Selecting features ###
 
 ### WHERE THE DATA DIR LIVES ###
-data_dir <- 'C:/Users/dgibbs/ISB_Work/cluster_prediction_data/'
-#data_dir <- 'F:/Work/cluster_prediction_data/'
+#data_dir <- 'C:/Users/dgibbs/ISB_Work/cluster_prediction_data/'
+data_dir <- 'F:/Work/cluster_prediction_data/'
 
 ### WHERE TO WRITE THE NEW TABLES ###
 out_dir <- paste0(data_dir, 'results/')
@@ -165,3 +165,156 @@ plot(y=df6$KL, x=df6$UP, xlab='Probability for greater than', ylab='KL divergenc
 df2[(!is.na(df2$KL)) & (!is.infinite(df2$KL)) & (df2$KL > 0.5),]
 
 df3[(!is.na(df3$KL)) & (!is.infinite(df3$KL)) & (df3$KL > 0.5),]
+
+
+df1 <- read.csv(paste0(data_dir,'/features/C1_feature_sel_vals.csv'))
+df2 <- read.csv(paste0(data_dir,'/features/C2_feature_sel_vals.csv'))
+df3 <- read.csv(paste0(data_dir,'/features/C3_feature_sel_vals.csv'))
+df4 <- read.csv(paste0(data_dir,'/features/C4_feature_sel_vals.csv'))
+df5 <- read.csv(paste0(data_dir,'/features/C5_feature_sel_vals.csv'))
+df6 <- read.csv(paste0(data_dir,'/features/C6_feature_sel_vals.csv'))
+
+
+df1x <- df1[is.finite(rowSums(df1)),]
+df1_up <- df1x[df1x$UP > 0.5,]
+df1_dn <- df1x[df1x$UP < 0.5,]
+idx <- order(df1_up$KL, decreasing = T)
+jdx <- order(df1_dn$KL, decreasing = T)
+
+df1_up_X <- df1_up[idx[1:20],'X']
+df1_dn_X <- df1_dn[jdx[1:20],'X']
+
+df1x$color <-  "grey"
+df1x$color[df1x$X %in% df1_up_X] <- "red"
+df1x$color[df1x$X %in% df1_dn_X] <- "blue"
+
+qplot(y=df1x$KL, x=df1x$UP,
+      xlab='Probability for greater than', ylab='KL divergence',
+      col = df1x$color)
+
+
+df2x <- df2[is.finite(rowSums(df2)),]
+df2_up <- df2x[df2x$UP > 0.5,]
+df2_dn <- df2x[df2x$UP < 0.5,]
+idx <- order(df2_up$KL, decreasing = T)
+jdx <- order(df2_dn$KL, decreasing = T)
+
+df2_up_X <- df2_up[idx[1:20],'X']
+df2_dn_X <- df2_dn[jdx[1:20],'X']
+
+df2x$color <-  "grey"
+df2x$color[df2x$X %in% df2_up_X] <- "red"
+df2x$color[df2x$X %in% df2_dn_X] <- "blue"
+
+qplot(y=df2x$KL, x=df2x$UP,
+      xlab='Probability for greater than', ylab='KL divergence',
+      col = df2x$color)
+
+
+
+df3x <- df3[is.finite(rowSums(df3)),]
+df3_up <- df3x[df3x$UP > 0.5,]
+df3_dn <- df3x[df3x$UP < 0.5,]
+idx <- order(df3_up$KL, decreasing = T)
+jdx <- order(df3_dn$KL, decreasing = T)
+
+df3_up_X <- df3_up[idx[1:20],'X']
+df3_dn_X <- df3_dn[jdx[1:20],'X']
+
+df3x$color <-  "grey"
+df3x$color[df3x$X %in% df3_up_X] <- "red"
+df3x$color[df3x$X %in% df3_dn_X] <- "blue"
+
+qplot(y=df3x$KL, x=df3x$UP,
+      xlab='Probability for greater than', ylab='KL divergence',
+      col = df3x$color)
+
+
+df4x <- df4[is.finite(rowSums(df4)),]
+df4_up <- df4x[df4x$UP > 0.5,]
+df4_dn <- df4x[df4x$UP < 0.5,]
+idx <- order(df4_up$KL, decreasing = T)
+jdx <- order(df4_dn$KL, decreasing = T)
+
+df4_up_X <- df4_up[idx[1:20],'X']
+df4_dn_X <- df4_dn[jdx[1:20],'X']
+
+df4x$color <-  "grey"
+df4x$color[df4x$X %in% df4_up_X] <- "red"
+df4x$color[df4x$X %in% df4_dn_X] <- "blue"
+
+qplot(y=df4x$KL, x=df4x$UP,
+      xlab='Probability for greater than', ylab='KL divergence',
+      col = df4x$color)
+
+
+
+df5x <- df5[is.finite(rowSums(df5)),]
+df5_up <- df5x[df5x$UP > 0.5,]
+df5_dn <- df5x[df5x$UP < 0.5,]
+idx <- order(df5_up$KL, decreasing = T)
+jdx <- order(df5_dn$KL, decreasing = T)
+
+df5_up_X <- df5_up[idx[1:20],'X']
+df5_dn_X <- df5_dn[jdx[1:20],'X']
+
+df5x$color <-  "grey"
+df5x$color[df5x$X %in% df5_up_X] <- "red"
+df5x$color[df5x$X %in% df5_dn_X] <- "blue"
+
+qplot(y=df5x$KL, x=df5x$UP,
+      xlab='Probability for greater than', ylab='KL divergence',
+      col = df5x$color)
+
+
+df6x <- df6[is.finite(rowSums(df6)),]
+df6_up <- df6x[df6x$UP > 0.5,]
+df6_dn <- df6x[df6x$UP < 0.5,]
+idx <- order(df6_up$KL, decreasing = T)
+jdx <- order(df6_dn$KL, decreasing = T)
+
+df6_up_X <- df6_up[idx[1:20],'X']
+df6_dn_X <- df6_dn[jdx[1:20],'X']
+
+df6x$color <-  "grey"
+df6x$color[df6x$X %in% df6_up_X] <- "red"
+df6x$color[df6x$X %in% df6_dn_X] <- "blue"
+
+qplot(y=df6x$KL, x=df6x$UP,
+      xlab='Probability for greater than', ylab='KL divergence',
+      col = df6x$color)
+
+
+sf1up <- data.frame(Type='feature', Symbol=symbs[df1_up_X], X=df1_up_X, Cluster='C1_up')
+sf1dn <- data.frame(Type='feature', Symbol=symbs[df1_dn_X], X=df1_dn_X, Cluster='C1_dn')
+
+sf2up <- data.frame(Type='feature', Symbol=symbs[df2_up_X], X=df2_up_X, Cluster='C2_up')
+sf2dn <- data.frame(Type='feature', Symbol=symbs[df2_dn_X], X=df2_dn_X, Cluster='C2_dn')
+
+sf3up <- data.frame(Type='feature', Symbol=symbs[df3_up_X], X=df3_up_X, Cluster='C3_up')
+sf3dn <- data.frame(Type='feature', Symbol=symbs[df3_dn_X], X=df3_dn_X, Cluster='C3_dn')
+
+sf4up <- data.frame(Type='feature', Symbol=symbs[df4_up_X], X=df4_up_X, Cluster='C4_up')
+sf4dn <- data.frame(Type='feature', Symbol=symbs[df4_dn_X], X=df4_dn_X, Cluster='C4_dn')
+
+sf5up <- data.frame(Type='feature', Symbol=symbs[df5_up_X], X=df5_up_X, Cluster='C5_up')
+sf5dn <- data.frame(Type='feature', Symbol=symbs[df5_dn_X], X=df5_dn_X, Cluster='C5_dn')
+
+sf6up <- data.frame(Type='feature', Symbol=symbs[df6_up_X], X=df6_up_X, Cluster='C6_up')
+sf6dn <- data.frame(Type='feature', Symbol=symbs[df6_dn_X], X=df6_dn_X, Cluster='C6_dn')
+
+sf <- rbind(sf1up,sf1dn,sf2up,sf2dn,sf3up,sf3dn,sf4up,sf4dn,sf5up,sf5dn,sf6up,sf6dn)
+
+
+
+load('F:/Work/cluster_prediction_data/geneSetSymbols.rda')
+
+sigdf1 <- data.frame(Type='signature', Symbol=genesetsymbols$CHANG_CORE_SERUM_RESPONSE_UP, X=0, Cluster='chang_core_serum_response_up')
+sigdf2 <- data.frame(Type='signature', Symbol=genesetsymbols$CSF1_response, X=0, Cluster='csf1_reponse')
+sigdf3 <- data.frame(Type='signature', Symbol=genesetsymbols$LIexpression_score, X=0, Cluster='li_expression')
+sigdf4 <- data.frame(Type='signature', Symbol=genesetsymbols$Module3_IFN_score, X=0, Cluster='module3_ifn_score')
+sigdf5 <- data.frame(Type='signature', Symbol=genesetsymbols$TGFB_score_21050467, X=0, Cluster='tgfb_score_2105467')
+
+sf <- rbind(sf,sigdf1,sigdf2,sigdf3,sigdf4,sigdf5)\
+
+write.csv(sf,file='selected_features_11_10_22.csv',row.names = F)

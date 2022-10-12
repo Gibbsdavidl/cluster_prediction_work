@@ -11,7 +11,7 @@ library(readr)
 library(stringr)
 library(devtools)
 if (!require(robencla)) {
-  devtools::install_github("https://github.com/Gibbsdavidl/robencla",quiet = TRUE)
+  devtools::install_github("https://github.com/Gibbsdavidl/robencla",quiet = TRUE,force = TRUE)
 }
 ```
 
@@ -19,7 +19,8 @@ if (!require(robencla)) {
 ## EDIT THESE LOCATIONS##
 
 ### WHERE THE FORMATTED DATA DIR LIVES ###
-data_dir <- 'D:/Work/cluster_prediction_data/formatted/'
+#data_dir <- 'D:/Work/cluster_prediction_data/formatted/'
+data_dir <- 'F:/Work/cluster_prediction_data/formatted/'
 
 ### WHERE TO WRITE THE NEW TABLES ###
 out_dir <- paste0(data_dir, 'results/')
@@ -28,22 +29,27 @@ if (!dir.exists(out_dir)){
 }
 
 ### WHAT TO NAME THE FILES, WILL BE A COLUMN
-file_prefix <- "Random_Genes_Sept13_run3"
+file_prefix <- "Random_Genes_Oct11"
 
 ### GENES TO INCLUDE AS A FILE ###
-gene_table <- read.csv(paste0(data_dir,'random_genes_table.csv'), header=T, stringsAsFactors = F)
-all_genes <- unique(gene_table$Gene)
+#gene_table <- read.csv(paste0(data_dir,'random_genes_table.csv'), header=T, stringsAsFactors = F)
+gene_table <- read.csv(paste0(data_dir,'selcted_features_table_11_10_22.csv'), header=T, stringsAsFactors = F)
+
 ```
 
 
 
 ```{r}
 # then create some gene signatures:
-random_sigs <- list(
-    sig1=gene_table$Gene[gene_table$Type == 'Set1'],
-    sig2=gene_table$Gene[gene_table$Type == 'Set2'],
-    sig3=gene_table$Gene[gene_table$Type == 'Set3']
+sigs <- list(
+    sig1=gene_table$Symbol[gene_table$Cluster == 'chang_core_serum_response_up'],
+    sig2=gene_table$Symbol[gene_table$Cluster == 'csf1_reponse'],
+    sig3=gene_table$Symbol[gene_table$Cluster == 'li_expression'],
+    sig4=gene_table$Symbol[gene_table$Cluster == 'module3_ifn_score'],
+    sig5=gene_table$Symbol[gene_table$Cluster == 'tgfb_score_2105467']
 )
+
+pairgenes <- gene_table$Symbol[gene_table$Type=='feature']
 ```
 
 Now we're ready to do some training
@@ -65,14 +71,15 @@ params <- list(max_depth=12,
 
 # split the data, train and test
 susan$autotrain(data_file=paste0(data_dir,'EBPP_subset.csv'),
-               label_name='Label',
-               sample_id = 'Barcode',
-               data_mode=c('sigpairs','pairs','quartiles'), # pairs,sigpairs,quartiles,tertiles,binarize,ranks,original #
-               signatures=random_sigs,
-               size=3,
-               params=params,
-               train_perc=0.8,
-               combine_function='median')
+                label_name='Label',
+                sample_id = 'Barcode',
+                data_mode=c('sigpairs','pairs','quartiles'), # pairs,sigpairs,quartiles,tertiles,binarize,ranks,original #
+                signatures=sigs,
+                pair_list=pairgenes,
+                size=7,
+                params=params,
+                train_perc=0.8,
+                combine_function='median')
 
 
 ```
