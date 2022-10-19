@@ -5,7 +5,7 @@ library(devtools)
 require(robencla)
 
 
-run_pred <- function(train_data, test_data, data_dir, out_dir, file_prefix, sigs, gene_pairs) {
+run_pred <- function(train_data, test_data, data_dir, out_dir, file_prefix, sigs, gene_pairs, ens_size) {
 
     ### MAKE SURE OUTPUT PATH IS OK TO WRITE ###
     if (!dir.exists(out_dir)){
@@ -33,7 +33,7 @@ run_pred <- function(train_data, test_data, data_dir, out_dir, file_prefix, sigs
                     data_mode=c('sigpairs','pairs','quartiles'), # pairs,sigpairs,quartiles,tertiles,binarize,ranks,original #
                     signatures=sigs,
                     pair_list=gene_pairs,
-                    size=7,
+                    size=ens_size,
                     params=params,
                     train_perc=0.8,
                     combine_function='median')
@@ -107,4 +107,49 @@ sigs <- list(
 # genes to make pairs from
 pairgenes <- gene_table$Symbol[gene_table$Type=='feature']
 
-robj <- run_pred(train_data, test_data, data_dir, out_dir, file_prefix, sigs, pairgenes)
+
+run_pred(train_data, test_data, data_dir, out_dir, "size_1_1", sigs, pairgenes, 1)
+run_pred(train_data, test_data, data_dir, out_dir, "size_3_1", sigs, pairgenes, 3)
+run_pred(train_data, test_data, data_dir, out_dir, "size_5_1", sigs, pairgenes, 5)
+run_pred(train_data, test_data, data_dir, out_dir, "size_7_1", sigs, pairgenes, 7)
+run_pred(train_data, test_data, data_dir, out_dir, "size_9_1", sigs, pairgenes, 9)
+run_pred(train_data, test_data, data_dir, out_dir, "size_12_1", sigs, pairgenes, 11)
+run_pred(train_data, test_data, data_dir, out_dir, "size_13_1", sigs, pairgenes, 13)
+run_pred(train_data, test_data, data_dir, out_dir, "size_15_1", sigs, pairgenes, 15)
+
+run_pred(train_data, test_data, data_dir, out_dir, "size_1_2", sigs, pairgenes, 1)
+run_pred(train_data, test_data, data_dir, out_dir, "size_3_2", sigs, pairgenes, 3)
+run_pred(train_data, test_data, data_dir, out_dir, "size_5_2", sigs, pairgenes, 5)
+run_pred(train_data, test_data, data_dir, out_dir, "size_7_2", sigs, pairgenes, 7)
+run_pred(train_data, test_data, data_dir, out_dir, "size_9_2", sigs, pairgenes, 9)
+run_pred(train_data, test_data, data_dir, out_dir, "size_12_2", sigs, pairgenes, 11)
+run_pred(train_data, test_data, data_dir, out_dir, "size_13_2", sigs, pairgenes, 13)
+run_pred(train_data, test_data, data_dir, out_dir, "size_15_2", sigs, pairgenes, 15)
+
+run_pred(train_data, test_data, data_dir, out_dir, "size_1_3", sigs, pairgenes, 1)
+run_pred(train_data, test_data, data_dir, out_dir, "size_3_3", sigs, pairgenes, 3)
+run_pred(train_data, test_data, data_dir, out_dir, "size_5_3", sigs, pairgenes, 5)
+run_pred(train_data, test_data, data_dir, out_dir, "size_7_3", sigs, pairgenes, 7)
+run_pred(train_data, test_data, data_dir, out_dir, "size_9_3", sigs, pairgenes, 9)
+run_pred(train_data, test_data, data_dir, out_dir, "size_12_3", sigs, pairgenes, 11)
+run_pred(train_data, test_data, data_dir, out_dir, "size_13_3", sigs, pairgenes, 13)
+run_pred(train_data, test_data, data_dir, out_dir, "size_15_3", sigs, pairgenes, 15)
+
+run_pred(train_data, test_data, data_dir, out_dir, "size_1_4", sigs, pairgenes, 1)
+run_pred(train_data, test_data, data_dir, out_dir, "size_3_4", sigs, pairgenes, 3)
+run_pred(train_data, test_data, data_dir, out_dir, "size_5_4", sigs, pairgenes, 5)
+run_pred(train_data, test_data, data_dir, out_dir, "size_7_4", sigs, pairgenes, 7)
+run_pred(train_data, test_data, data_dir, out_dir, "size_9_4", sigs, pairgenes, 9)
+run_pred(train_data, test_data, data_dir, out_dir, "size_12_4", sigs, pairgenes, 11)
+run_pred(train_data, test_data, data_dir, out_dir, "size_13_4", sigs, pairgenes, 13)
+run_pred(train_data, test_data, data_dir, out_dir, "size_15_4", sigs, pairgenes, 15)
+
+run_pred(train_data, test_data, data_dir, out_dir, "size_1_5", sigs, pairgenes, 1)
+run_pred(train_data, test_data, data_dir, out_dir, "size_3_5", sigs, pairgenes, 3)
+run_pred(train_data, test_data, data_dir, out_dir, "size_5_5", sigs, pairgenes, 5)
+run_pred(train_data, test_data, data_dir, out_dir, "size_7_5", sigs, pairgenes, 7)
+run_pred(train_data, test_data, data_dir, out_dir, "size_9_5", sigs, pairgenes, 9)
+run_pred(train_data, test_data, data_dir, out_dir, "size_12_5", sigs, pairgenes, 11)
+run_pred(train_data, test_data, data_dir, out_dir, "size_13_5", sigs, pairgenes, 13)
+run_pred(train_data, test_data, data_dir, out_dir, "size_15_5", sigs, pairgenes, 15)
+
